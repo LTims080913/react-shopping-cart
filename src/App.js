@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Route } from 'react-router-dom';
 import data from './data';
 import {ProductContext} from './contexts/ProductContext'
@@ -7,6 +7,7 @@ import {ProductContext} from './contexts/ProductContext'
 import Navigation from './components/Navigation';
 import Products from './components/Products';
 import ShoppingCart from './components/ShoppingCart';
+import {CartContext} from './contexts/CartContext'
 
 function App() {
 	const [products] = useState(data);
@@ -16,20 +17,25 @@ function App() {
 		// add the given item to the cart
 		setCart([...cart, item])
 	};
+	const removeItem = id => {
+		setCart(cart.filter((obj) => obj.id !== id))
+	}
 
 	return (
 		<div className="App">
 			<ProductContext.Provider value={{ products, addItem }}>
-			<Navigation cart={cart} />
+				<CartContext.Provider value={{cart, removeItem}}>
+					<Navigation />
 			
 			{/* Routes */}
-				<Route exact path="/">
-					<Products />
-				</Route>
+						<Route exact path="/">
+							<Products />
+						</Route>
 
-				<Route path="/cart">
-					<ShoppingCart cart={cart} />
-			</Route>
+						<Route path="/cart">
+							<ShoppingCart />
+					</Route>
+				</CartContext.Provider>
 			</ProductContext.Provider>
 		</div>
 	);
